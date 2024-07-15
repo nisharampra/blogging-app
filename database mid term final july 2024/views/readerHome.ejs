@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Document metadata -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reader Home Page</title>
+    <!-- Link to external stylesheet for custom styles -->
+    <link rel="stylesheet" href="/main.css">
+    <!-- Link to Milligram CSS framework for styling -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/milligram@1.4.1/dist/milligram.min.css">
+    <style>
+        /* Add any additional styles specific to the Reader Home Page */
+        .article-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .article-box {
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
+        .article-box h3 {
+            margin-top: 0;
+        }
+        .article-box p {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Main heading for the Reader Home Page -->
+    <h1 style="text-align: center;">Reader Home Page</h1>
+    
+    <!-- Button to navigate back to the Main Home Page -->
+    <div style="text-align: center;">
+        <button onclick="window.location.href='/'">Back to Main Home Page</button>
+    </div>
+    
+    <section>
+        <!-- Subheading and description for the Reader Home Page -->
+        <h2 style="text-align: center;">Welcome, Reader!</h2>
+        <p style="text-align: center;">This is your reader home page. Here are the published articles:</p>
+        
+        <!-- Article List displayed as rows and columns -->
+        <% if (articles && articles.length > 0) { %>
+            <div class="article-container">
+                <% articles.forEach(article => { %>
+                    <div class="article-box">
+                        <!-- Article title as a link to the article page -->
+                        <h3><a href="/reader/article/<%= article.id %>"><%= article.title %></a></h3>
+                        <!-- Display article published date and author -->
+                        <p><strong>Published Date:</strong> <%= new Date(article.created_at).toLocaleDateString() %></p>
+                        <p><strong>Author:</strong> <%= article.username %></p>
+                    </div>
+                <% }); %>
+            </div>
+        <% } else { %>
+            <!-- Message displayed if no articles are found -->
+            <p>No published articles found.</p>
+        <% } %>
+    </section>
+
+</body>
+</html>

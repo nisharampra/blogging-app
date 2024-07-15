@@ -1,0 +1,85 @@
+<!-- readerArticle.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Character set and viewport settings -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Dynamic title based on the article title -->
+    <title><%= article.title %></title>
+    <!-- Link to external stylesheet for custom styles -->
+    <link rel="stylesheet" href="/main.css">
+    <!-- Link to Milligram CSS framework for styling -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/milligram@1.4.1/dist/milligram.min.css">
+    <style>
+    </style>
+</head>
+<body>
+    <!-- Main heading with the article title -->
+    <h1><%= article.title %></h1>
+
+    <section>
+        <!-- Display article details -->
+        <p><strong>Published Date:</strong> <%= new Date(article.created_at).toLocaleDateString() %></p>
+        <p><strong>Author:</strong> <%= article.username %></p>
+        <p><strong>Number of Views:</strong> <%= article.views %></p>
+        <p><strong>Number of Likes:</strong> <%= article.likes %></p>
+        <p><%= article.content %></p>
+
+        <!-- Like Button Form -->
+        <form method="post" action="/reader/like">
+            <!-- Hidden input to pass the article ID -->
+            <input type="hidden" name="articleId" value="<%= article.id %>">
+            <!-- Submit button to like the article -->
+            <button type="submit">Like Article</button>
+        </form>
+
+        <!-- Comments Section -->
+        <% article.comments.forEach(comment => { %>
+            <li>
+                <!-- Display each comment's username and content -->
+                <p><strong><%= comment.username %>:</strong> <%= comment.content %></p>
+                <!-- Debug line for created_at value -->
+                <p><strong>Debug - Created At:</strong> <%= comment.created_at %></p> <!-- Add this line -->
+                <!-- Display comment date if available -->
+                <% if (comment.created_at !== null && new Date(comment.created_at).toString() !== 'Invalid Date') { %>
+                    <p><strong>Comment Date:</strong> <%= new Date(comment.created_at).toLocaleDateString() %></p>
+                <% } else { %>
+                    <p><strong>Comment Date:</strong> Date not available</p>
+                <% } %>
+            </li>
+        <% }); %>
+
+        <!-- Form for adding comments -->
+        <form method="post" action="/reader/comments">
+            <!-- Hidden input to pass the article ID -->
+            <input type="hidden" name="articleId" value="<%= article.id %>">
+            <!-- Input for the commenter's username -->
+            <input type="text" name="username" placeholder="Your Name" required>
+            <!-- Textarea for the comment content -->
+            <textarea name="comment" placeholder="Write your comment..." rows="2" required></textarea>
+            <!-- Submit button to add the comment -->
+            <button type="submit">Add Comment</button>
+        </form>
+
+        <!-- Back Button -->
+        <div>
+            <!-- Button to go back to the Reader Home Page -->
+            <button onclick="window.location.href='/reader/home'">Back to Reader Home</button>
+        </div>
+    </section>
+
+    <!-- Script to set current date for each comment -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var commentDates = document.querySelectorAll('.comment-date');
+            var currentDate = new Date().toLocaleDateString();
+
+            commentDates.forEach(function(element) {
+                element.textContent = currentDate;
+            });
+        });
+    </script>
+</body>
+</html>
+

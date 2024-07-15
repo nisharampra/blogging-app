@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Author Home Page</title>
+    <!-- Link to custom styles and Milligram CSS framework -->
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/milligram@1.4.1/dist/milligram.min.css">
+    <style>
+        /* Style for the popup dialog */
+        .popup {
+            display: none;
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <h1 style="text-align: center;">Author Home Page</h1>
+    <section style="display: flex; flex-direction: column; align-items: center;">
+        <p>Welcome to the Author Home Page, <span id="username"><%= username %></span>!</p>
+        <!-- Navigation buttons -->
+        <div style="display: flex; gap: 10px;">
+            <button onclick="window.location.href='/articles/create'">Create new draft</button>
+            <button onclick="window.location.href='/logout'">Log Out</button>
+            <button onclick="window.location.href='/change-password-email'">Change Password and email</button>
+            <button onclick="window.location.href='/community'">Community</button>
+            <button onclick="window.location.href='/author/settings'">Settings</button>
+        </div>
+    </section>
+
+    <!-- Settings Popup -->
+    <div id="settingsPopup" class="popup">
+        <h2>Change Username</h2>
+        <form onsubmit="updateUsername(event)">
+            <label for="newUsername">New Username:</label>
+            <input type="text" id="newUsername" name="newUsername" required>
+            <button type="submit">Update</button>
+        </form>
+        <button onclick="closeSettingsPopup()">Close</button>
+    </div>
+
+    <!-- Section for displaying draft articles -->
+    <section>
+        <h2>Draft Articles</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Content</th>
+                    <th>Date Created</th> <!-- New column for Date Created -->
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% draftArticles.forEach(article => { %>
+                    <tr>
+                        <td><%= article.title %></td>
+                        <td><%= article.content %></td>
+                        <td><%= new Date(article.created_at).toLocaleDateString() %></td> <!-- Display date created -->
+                        <td>
+                            <div style="display: flex; gap: 5px;">
+                                <!-- Form to edit the article -->
+                                <form action="/articles/edit/<%= article.id %>" method="GET" style="margin: 0;">
+                                    <button type="submit">Edit</button>
+                                </form>
+                                <!-- Form to delete the article -->
+                                <form action="/articles/delete/<%= article.id %>" method="POST" style="margin: 0;">
+                                    <button type="submit">Delete</button>
+                                </form>
+                                <!-- Form to publish the article -->
+                                <form action="/articles/publish/<%= article.id %>" method="POST" style="margin: 0;">
+                                    <button type="submit">Publish</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </section>
+
+    <!-- Section for displaying published articles -->
+    <section>
+        <h2>Published Articles</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Content</th>
+                    <th>Date Published</th>
+                    <th>Views</th>
+                    <th>Comments</th>
+                    <th>Likes</th>
+                    <th>Actions</th>
+                    <th>Share</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% publishedArticles.forEach(article => { %>
+                    <tr>
+                        <td><%= article.title %></td>
+                        <td><%= article.content %></td>
+                        <td><%= new Date(article.created_at).toLocaleDateString() %></td>
+                        <td><%= article.views %></td>
+                        <td><%= article.comment_count %></td>
+                        <td><%= article.like_count %></td>
+                        <td>
+                            <!-- Form to delete the published article -->
+                            <form action="/articles/delete/<%= article.id %>" method="POST" style="margin: 0;">
+                                <button type="submit">Delete</button>
+                            </form>
+                        </td>
+                        <td>
+                            <!-- Button to show the article link for sharing -->
+                            <button onclick="showArticleLink('<%= article.id %>')">Share</button>
+                        </td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </section>
+
+    <script>
+        // Function to show the article link for sharing
+        function showArticleLink(articleId) {
+            const articleLink = `${window.location.origin}/reader/article/${articleId}`;
+            alert(`Share this link: ${articleLink}`);
+        }
+
+        // Function to toggle the settings popup visibility
+        function toggleSettingsPopup() {
+            var popup = document.getElementById('settingsPopup');
+            if (popup.style.display === 'none' || popup.style.display === '') {
+                popup.style.display = 'block';
+            } else {
+                popup.style.display = 'none';
+            }
+        }
+
+        // Function to update the username
+        function updateUsername(event) {
+            event.preventDefault();
+            var newName = document.getElementById('newUsername').value;
+            document.getElementById('username').innerText = newName;
+            // You can add AJAX logic here to update the username on the server
+            // Example: fetch('/update-username', { method: 'POST', body: JSON.stringify({ username: newName }), headers: { 'Content-Type': 'application/json' } });
+            closeSettingsPopup();
+        }
+
+        // Function to close the settings popup
+        function closeSettingsPopup() {
+            var popup = document.getElementById('settingsPopup');
+            popup.style.display = 'none';
+        }
+    </script>
+</body>
+</html>
